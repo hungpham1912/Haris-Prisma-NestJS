@@ -138,3 +138,12 @@ export function buildValueForSearchText<T>(
     return { [field]: { [type]: value } };
   });
 }
+
+
+export function selectFields<T>(fields: FindOptionsFields<T>) {
+  let data;
+  fields.forEach((field) => {
+    data[field] = true;
+  });
+  return data;
+}
