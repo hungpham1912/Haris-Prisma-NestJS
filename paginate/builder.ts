@@ -56,7 +56,7 @@ export class PaginateBuilder<T> {
     page?: number,
     limit?: number,
   ): Promise<{ total: number; results: T[] | any[] }> {
-    const [results, total] = await Promise.all([
+    const [data, totalItems] = await Promise.all([
       this.repository.findMany({
         where: { OR: this.findOrClause, AND: this.findAndClause },
         orderBy: this.sort.length > 0 ? this.sort : { createdAt: 'desc' },
@@ -67,7 +67,16 @@ export class PaginateBuilder<T> {
       }),
     ]);
 
-    return page && limit ? { total, results } : results;
+    return page && limit
+      ? {
+          data,
+          metaData: {
+            totalItems,
+            totalCurrentItems: data.length,
+            totalPages: Math.ceil(totalItems / limit),
+          },
+        }
+      : data;
   }
   private buildScope(page?: number, limit?: number) {
     let scope;
